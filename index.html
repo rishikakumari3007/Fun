@@ -165,6 +165,25 @@
         animation: shine 1.8s ease-out 1.1s both;
       }
 
+      .scene.is-suspense .card,
+      .scene.is-message .card {
+        min-height: 270px;
+        border-color: rgb(255 255 255 / 90%);
+        background: linear-gradient(145deg, #33236e, #171544);
+        box-shadow:
+          0 34px 70px rgb(5 8 38 / 55%),
+          0 0 0 5px #00e7ff,
+          0 0 0 10px #ff3c88,
+          inset 0 2px 0 rgb(255 255 255 / 35%);
+        opacity: 1;
+        transform: rotateX(0) translateY(0) scale(1);
+      }
+
+      .scene.is-suspense .card::before,
+      .scene.is-message .card::before {
+        border-color: rgb(255 255 255 / 22%);
+      }
+
       h1 {
         margin: 0;
         color: #fff;
@@ -174,6 +193,7 @@
         line-height: .98;
         letter-spacing: -.035em;
         text-transform: uppercase;
+        white-space: pre-line;
         -webkit-text-stroke: 1px #171544;
         text-shadow:
           2px 2px 0 #171544,
@@ -191,6 +211,26 @@
       .scene.is-revealed h1 {
         opacity: 1;
         transform: translateY(0) rotate(0) scale(1);
+      }
+
+      .scene.is-suspense h1,
+      .scene.is-message h1 {
+        max-width: 100%;
+        color: #fff;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        font-size: clamp(1.7rem, 5vw, 2.8rem);
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: .01em;
+        text-transform: none;
+        -webkit-text-stroke: 0;
+        text-shadow: 0 0 24px rgb(0 231 255 / 55%), 3px 4px 0 #ff3c88;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      .scene.is-message .card {
+        animation: card-party 1.4s ease-in-out infinite;
       }
 
       .replay {
@@ -431,6 +471,7 @@
 
     <script>
       const scene = document.querySelector("#scene");
+      const heading = document.querySelector("#message");
       const glitter = document.querySelector("#glitter");
       const particles = document.querySelector("#particles");
       const announcement = document.querySelector("#announcement");
@@ -440,6 +481,8 @@
       const confettiColors = ["#ff3c88", "#ffbd00", "#fff078", "#ffffff", "#7954ff", "#00e7ff", "#a5ff00", "#ff6238"];
       let celebrationInterval;
       let revealTimer;
+      let messageTimer;
+      let finalTimer;
 
       function addGlitter() {
         for (let index = 0; index < 72; index += 1) {
@@ -517,22 +560,44 @@
       }
 
       function reveal() {
+        heading.textContent = "Bohot\nMarrungi";
+        scene.classList.remove("is-suspense", "is-message");
         scene.classList.add("is-revealed");
         announcement.textContent = "Bohot Marrungi";
         celebrate();
       }
 
+      function showImportantMessage() {
+        heading.textContent = "I have something important to tell you";
+        scene.classList.remove("is-suspense");
+        scene.classList.add("is-message");
+        announcement.textContent = heading.textContent;
+        finalTimer = window.setTimeout(reveal, 3000);
+      }
+
+      function startSurprise() {
+        revealTimer = window.setTimeout(() => {
+          heading.textContent = "Wait for it...";
+          scene.classList.add("is-suspense");
+          announcement.textContent = heading.textContent;
+          messageTimer = window.setTimeout(showImportantMessage, 1800);
+        }, 5000);
+      }
+
       function replaySurprise() {
         window.clearInterval(celebrationInterval);
         window.clearTimeout(revealTimer);
-        scene.classList.remove("is-revealed");
+        window.clearTimeout(messageTimer);
+        window.clearTimeout(finalTimer);
+        scene.classList.remove("is-revealed", "is-suspense", "is-message");
+        heading.replaceChildren("Bohot", document.createElement("br"), "Marrungi");
         announcement.textContent = "";
         particles.replaceChildren();
-        revealTimer = window.setTimeout(reveal, 3400);
+        startSurprise();
       }
 
       addGlitter();
-      revealTimer = window.setTimeout(reveal, 3400);
+      startSurprise();
       replay.addEventListener("click", replaySurprise);
     </script>
   </body>
