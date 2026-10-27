@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171544" />
+    <title>A little surprise</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        --deep-pink: #171544;
+        --cream: #ffcc35;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse at 16% 26%, rgb(255 60 136 / 55%) 0, transparent 27%),
+          radial-gradient(ellipse at 82% 18%, rgb(0 231 255 / 38%) 0, transparent 29%),
+          radial-gradient(ellipse at 76% 88%, rgb(255 183 0 / 31%) 0, transparent 33%),
+          linear-gradient(140deg, #11123f 0%, #30206e 48%, #101942 100%);
+        background-size: 150% 150%;
+        color: #fff;
+        animation: party-lights 12s ease-in-out infinite alternate;
+      }
+
+      body::before,
+      body::after {
+        position: fixed;
+        z-index: 0;
+        width: 42vmax;
+        height: 42vmax;
+        border: 2px solid rgb(255 255 255 / 20%);
+        border-radius: 50%;
+        content: "";
+        pointer-events: none;
+        animation: orbit 18s linear infinite;
+      }
+
+      body::before {
+        top: -25vmax;
+        left: -18vmax;
+        box-shadow:
+          0 0 0 34px rgb(0 231 255 / 11%),
+          0 0 0 68px rgb(255 183 0 / 9%),
+          0 0 0 110px rgb(255 60 136 / 8%);
+      }
+
+      body::after {
+        right: -25vmax;
+        bottom: -30vmax;
+        animation-direction: reverse;
+        box-shadow:
+          0 0 0 38px rgb(255 60 136 / 12%),
+          0 0 0 76px rgb(0 231 255 / 8%),
+          0 0 0 112px rgb(255 183 0 / 7%);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .scene {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        min-height: 100svh;
+        place-items: center;
+        padding: 28px;
+        perspective: 1200px;
+        isolation: isolate;
+      }
+
+      .glow {
+        position: absolute;
+        z-index: -1;
+        width: min(78vw, 680px);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: conic-gradient(#ff3c88, #ffbd00, #00e7ff, #a5ff00, #ff3c88);
+        filter: blur(90px);
+        opacity: 0;
+        transform: scale(.7);
+        transition: opacity 2s ease, transform 2.4s cubic-bezier(.16, 1, .3, 1);
+      }
+
+      .scene.is-revealed .glow {
+        opacity: .6;
+        transform: scale(1);
+      }
+
+      .card {
+        position: relative;
+        display: grid;
+        width: min(100%, 560px);
+        min-height: 370px;
+        align-content: center;
+        justify-items: center;
+        padding: 64px 32px 54px;
+        overflow: hidden;
+        border: 3px solid #fff;
+        border-radius: 22px;
+        background:
+          linear-gradient(135deg, #ffe45e 0%, #ffbd2e 37%, #ff7043 100%);
+        box-shadow:
+          0 34px 70px rgb(5 8 38 / 55%),
+          0 0 0 8px rgb(0 231 255 / 80%),
+          0 0 0 14px rgb(255 60 136 / 65%),
+          inset 0 3px 0 rgb(255 255 255 / 70%),
+          inset 0 -15px 25px rgb(198 43 27 / 22%);
+        text-align: center;
+        transform: rotateX(18deg) rotateZ(-8deg) translateY(40px) scale(.55);
+        opacity: 0;
+        transition:
+          transform 1.1s cubic-bezier(.16, 1, .3, 1),
+          opacity .5s ease,
+          box-shadow .6s ease;
+        will-change: transform, opacity;
+      }
+
+      .card::before {
+        position: absolute;
+        inset: 9px;
+        border: 2px dashed rgb(23 21 68 / 33%);
+        border-radius: 15px;
+        content: "";
+        pointer-events: none;
+      }
+
+      .card::after {
+        position: absolute;
+        top: -45%;
+        left: -70%;
+        width: 55%;
+        height: 190%;
+        background: linear-gradient(90deg, transparent, rgb(255 255 255 / 75%), transparent);
+        content: "";
+        opacity: 0;
+        transform: rotate(25deg);
+        pointer-events: none;
+      }
+
+      .scene.is-revealed .card {
+        opacity: 1;
+        transform: rotateX(0) translateY(0) scale(1);
+        box-shadow:
+          0 42px 90px rgb(5 8 38 / 65%),
+          0 0 0 8px #00e7ff,
+          0 0 0 14px #ff3c88,
+          inset 0 3px 0 rgb(255 255 255 / 70%),
+          inset 0 -15px 25px rgb(198 43 27 / 22%);
+        animation: card-party 1.4s ease-in-out 1.1s infinite;
+      }
+
+      .scene.is-revealed .card::after {
+        opacity: 1;
+        animation: shine 1.8s ease-out 1.1s both;
+      }
+
+      h1 {
+        margin: 0;
+        color: #fff;
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+        font-size: clamp(2.8rem, 10vw, 5.2rem);
+        font-weight: 900;
+        line-height: .98;
+        letter-spacing: -.035em;
+        text-transform: uppercase;
+        -webkit-text-stroke: 1px #171544;
+        text-shadow:
+          2px 2px 0 #171544,
+          4px 4px 0 #171544,
+          6px 6px 0 #00e7ff,
+          9px 10px 0 #ff3c88,
+          0 15px 22px rgb(23 21 68 / 38%);
+        opacity: 0;
+        transform: translateY(28px) rotate(-8deg) scale(.45);
+        transition:
+          opacity .55s ease .18s,
+          transform .8s cubic-bezier(.16, 1, .3, 1) .18s;
+      }
+
+      .scene.is-revealed h1 {
+        opacity: 1;
+        transform: translateY(0) rotate(0) scale(1);
+      }
+
+      .replay {
+        position: absolute;
+        bottom: max(26px, env(safe-area-inset-bottom));
+        left: 50%;
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        padding: 0;
+        border: 2px solid #fff;
+        border-radius: 99px;
+        background: #00e7ff;
+        color: #171544;
+        font-size: 1.2rem;
+        box-shadow: 0 5px 0 #171544, 0 0 20px rgb(0 231 255 / 55%);
+        opacity: 0;
+        transform: translate(-50%, 8px);
+        transition: opacity .5s ease, transform .5s ease, background .2s ease;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+      }
+
+      .replay:hover {
+        background: #a5ff00;
+      }
+
+      .scene.is-revealed .replay {
+        opacity: 1;
+        transform: translate(-50%, 0);
+        transition-delay: 2.6s;
+      }
+
+      .scene.is-revealed .replay:hover {
+        transform: translate(-50%, 0) rotate(-35deg);
+      }
+
+      .glitter,
+      .poppers,
+      .particles {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .glitter {
+        z-index: 2;
+      }
+
+      .glint {
+        position: absolute;
+        top: var(--top);
+        left: var(--left);
+        width: var(--size);
+        height: var(--size);
+        background: var(--color);
+        clip-path: polygon(50% 0, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0 50%, 39% 38%);
+        filter: drop-shadow(0 0 7px var(--color));
+        animation: twinkle var(--duration) ease-in-out var(--delay) infinite alternate;
+      }
+
+      .poppers {
+        z-index: 3;
+      }
+
+      .popper {
+        position: absolute;
+        bottom: 20px;
+        width: 84px;
+        height: 124px;
+        opacity: 0;
+        transform: translateY(40px) rotate(var(--tilt));
+        transform-origin: 50% 100%;
+        filter: drop-shadow(0 12px 12px rgb(5 8 38 / 40%));
+      }
+
+      .popper.left {
+        left: clamp(10px, 5vw, 72px);
+        --tilt: -38deg;
+      }
+
+      .popper.right {
+        right: clamp(10px, 5vw, 72px);
+        --tilt: 38deg;
+      }
+
+      .popper::before {
+        position: absolute;
+        inset: 18px 10px 4px;
+        border: 2px solid rgb(255 255 255 / 85%);
+        border-radius: 9px 9px 18px 18px;
+        background:
+          repeating-linear-gradient(45deg, transparent 0 9px, rgb(255 255 255 / 85%) 9px 14px, transparent 14px 24px),
+          linear-gradient(135deg, var(--light), var(--color) 58%, var(--shade));
+        clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%);
+        content: "";
+      }
+
+      .popper::after {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 16px;
+        height: 24px;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        background: var(--light);
+        content: "";
+        box-shadow: 0 0 18px var(--color);
+        transform: translateX(-50%);
+      }
+
+      .scene.is-revealed .popper {
+        animation: popper-fire 1.2s cubic-bezier(.2, .8, .2, 1) var(--delay) both,
+          popper-recoil .55s ease-in-out 1.2s infinite alternate;
+      }
+
+      .particle {
+        position: absolute;
+        z-index: 4;
+        top: var(--top);
+        left: var(--left);
+        width: var(--size);
+        height: calc(var(--size) * 1.3);
+        border-radius: var(--radius, 2px);
+        background: var(--color);
+        opacity: 0;
+        box-shadow: 0 1px 3px rgb(95 31 62 / 18%);
+        animation: burst var(--duration) cubic-bezier(.12, .72, .29, 1) var(--delay) both;
+      }
+
+      .particle.is-round {
+        border-radius: 50%;
+      }
+
+      .particle.is-spark {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        box-shadow: 0 0 12px 3px var(--color);
+      }
+
+      .scene.is-revealed .particles {
+        z-index: 4;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      @keyframes orbit {
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes party-lights {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 100% 100%; }
+      }
+
+      @keyframes twinkle {
+        0% { opacity: .16; transform: scale(.3) rotate(0); }
+        100% { opacity: 1; transform: scale(1.2) rotate(45deg); }
+      }
+
+      @keyframes shine {
+        0% { transform: translateX(-5%) rotate(25deg); }
+        100% { transform: translateX(420%) rotate(25deg); }
+      }
+
+      @keyframes card-party {
+        0%, 100% { transform: translateY(0) rotateX(0) rotateZ(0) scale(1); }
+        25% { transform: translateY(-8px) rotateX(3deg) rotateZ(1.5deg) scale(1.015); }
+        75% { transform: translateY(4px) rotateX(-2deg) rotateZ(-1.5deg) scale(.99); }
+      }
+
+      @keyframes popper-fire {
+        0% { opacity: 0; transform: translateY(40px) rotate(var(--tilt)) scale(.65); }
+        65% { opacity: 1; transform: translateY(-10px) rotate(calc(var(--tilt) - 7deg)) scale(1.08); }
+        100% { opacity: 1; transform: translateY(0) rotate(var(--tilt)) scale(1); }
+      }
+
+      @keyframes popper-recoil {
+        from { transform: translateY(0) rotate(var(--tilt)) scale(1); }
+        to { transform: translateY(-5px) rotate(calc(var(--tilt) - 4deg)) scale(1.03); }
+      }
+
+      @keyframes burst {
+        0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.15); }
+        9% { opacity: 1; }
+        70% { opacity: 1; }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--spin)) scale(.35); }
+      }
+
+      @media (max-width: 520px) {
+        .scene { padding: 20px; }
+        .card { min-height: 330px; padding: 52px 22px 45px; border-radius: 18px; }
+        .card::before { border-radius: 12px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: .01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: .01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="scene" id="scene">
+      <div class="glow" aria-hidden="true"></div>
+      <section class="card" aria-labelledby="message">
+        <h1 id="message">Bohot<br />Marrungi</h1>
+      </section>
+      <div class="glitter" id="glitter" aria-hidden="true"></div>
+      <div class="poppers" aria-hidden="true">
+        <span class="popper left" style="--delay: .1s; --light: #fff078; --color: #ff3c88; --shade: #9c175c"></span>
+        <span class="popper right" style="--delay: .35s; --light: #8bffff; --color: #7954ff; --shade: #34218e"></span>
+        <span class="popper left" style="--delay: .6s; --light: #cfff70; --color: #00cde8; --shade: #087da6; bottom: 5px; left: 18vw"></span>
+        <span class="popper right" style="--delay: .8s; --light: #ffb26c; --color: #ffbd00; --shade: #db7500; bottom: 5px; right: 18vw"></span>
+      </div>
+      <div class="particles" id="particles" aria-hidden="true"></div>
+      <p class="sr-only" id="announcement" aria-live="assertive"></p>
+      <button class="replay" id="replay" type="button" aria-label="Replay the surprise">↻</button>
+    </main>
+
+    <script>
+      const scene = document.querySelector("#scene");
+      const glitter = document.querySelector("#glitter");
+      const particles = document.querySelector("#particles");
+      const announcement = document.querySelector("#announcement");
+      const replay = document.querySelector("#replay");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      const confettiColors = ["#ff3c88", "#ffbd00", "#fff078", "#ffffff", "#7954ff", "#00e7ff", "#a5ff00", "#ff6238"];
+      let celebrationInterval;
+      let revealTimer;
+
+      function addGlitter() {
+        for (let index = 0; index < 72; index += 1) {
+          const glint = document.createElement("span");
+          glint.className = "glint";
+          glint.style.setProperty("--top", `${Math.random() * 100}%`);
+          glint.style.setProperty("--left", `${Math.random() * 100}%`);
+          glint.style.setProperty("--size", `${4 + Math.random() * 11}px`);
+          glint.style.setProperty("--color", confettiColors[Math.floor(Math.random() * confettiColors.length)]);
+          glint.style.setProperty("--duration", `${.6 + Math.random() * 1.8}s`);
+          glint.style.setProperty("--delay", `${Math.random() * 2}s`);
+          glitter.append(glint);
+        }
+      }
+
+      function burstAt(x, y, count, delay = 0) {
+        for (let index = 0; index < count; index += 1) {
+          const particle = document.createElement("span");
+          const angle = (Math.PI * 2 * index) / count + (Math.random() - .5) * .5;
+          const distance = 110 + Math.random() * 300;
+          const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          particle.className = `particle${Math.random() > .83 ? " is-round" : ""}`;
+          if (Math.random() > .91) particle.classList.add("is-spark");
+          particle.style.setProperty("--top", `${y}%`);
+          particle.style.setProperty("--left", `${x}%`);
+          particle.style.setProperty("--size", `${5 + Math.random() * 8}px`);
+          particle.style.setProperty("--color", color);
+          particle.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+          particle.style.setProperty("--dy", `${Math.sin(angle) * distance - 70}px`);
+          particle.style.setProperty("--spin", `${Math.random() * 900 - 450}deg`);
+          particle.style.setProperty("--duration", `${1.7 + Math.random() * 1.5}s`);
+          particle.style.setProperty("--delay", `${delay}s`);
+          particles.append(particle);
+          particle.addEventListener("animationend", () => particle.remove(), { once: true });
+        }
+      }
+
+      function popperBurst(x, y, count, direction) {
+        for (let index = 0; index < count; index += 1) {
+          const particle = document.createElement("span");
+          const angle = direction + (Math.random() - .5) * 1.25;
+          const distance = 170 + Math.random() * 370;
+          const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          particle.className = `particle${Math.random() > .68 ? " is-round" : ""}`;
+          if (Math.random() > .72) particle.classList.add("is-spark");
+          particle.style.setProperty("--top", `${y}%`);
+          particle.style.setProperty("--left", `${x}%`);
+          particle.style.setProperty("--size", `${5 + Math.random() * 11}px`);
+          particle.style.setProperty("--color", color);
+          particle.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+          particle.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+          particle.style.setProperty("--spin", `${Math.random() * 1200 - 600}deg`);
+          particle.style.setProperty("--duration", `${1.6 + Math.random() * 1.5}s`);
+          particle.style.setProperty("--delay", `${Math.random() * .2}s`);
+          particles.append(particle);
+          particle.addEventListener("animationend", () => particle.remove(), { once: true });
+        }
+      }
+
+      function popperVolley() {
+        popperBurst(8, 84, 23, -.82);
+        popperBurst(92, 84, 23, -2.32);
+        popperBurst(24, 88, 14, -.95);
+        popperBurst(76, 88, 14, -2.19);
+      }
+
+      function celebrate() {
+        particles.replaceChildren();
+        if (reducedMotion.matches) return;
+        burstAt(14, 26, 42);
+        burstAt(86, 26, 42, .12);
+        burstAt(50, 8, 36, .28);
+        popperVolley();
+        celebrationInterval = window.setInterval(popperVolley, 1100);
+      }
+
+      function reveal() {
+        scene.classList.add("is-revealed");
+        announcement.textContent = "Bohot Marrungi";
+        celebrate();
+      }
+
+      function replaySurprise() {
+        window.clearInterval(celebrationInterval);
+        window.clearTimeout(revealTimer);
+        scene.classList.remove("is-revealed");
+        announcement.textContent = "";
+        particles.replaceChildren();
+        revealTimer = window.setTimeout(reveal, 3400);
+      }
+
+      addGlitter();
+      revealTimer = window.setTimeout(reveal, 3400);
+      replay.addEventListener("click", replaySurprise);
+    </script>
+  </body>
+</html>
